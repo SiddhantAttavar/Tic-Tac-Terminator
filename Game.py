@@ -1,8 +1,12 @@
+# Import packages
+from Bot import *
+
 class Game:
 	'''This class describes the TicTacToe game
 
 	Attributes
 	----------
+	botModes : Dict[str, func]
 	width : int
 		The board width
 	height : int
@@ -38,6 +42,11 @@ class Game:
 		'''
 
 		# Initialize values
+		self.botModes = {
+			'easy': easyBot,
+			'medium': mediumBot,
+			'hard': hardBot
+		}
 		self.width = width
 		self.height = height
 		self.turn = True
@@ -133,31 +142,51 @@ class Game:
 
 if __name__ == '__main__':
 	# Runs if this file is run directly
+
+	displayMap = {
+		None: '_',
+		False: 'O',
+		True: 'X'
+	}
+
 	# Take input
 	width = int(input('Enter board width: '))
 	height = int(input('Enter board height: '))
+	player = int(input('Enter which player you want to be: '))
 	game = Game(width, height)
+	mode = input('Enter your difficulty mode - Easy/Medium/Hard: ')
+	bot = game.botModes[mode.lower()]
 	print()
 	
 	# Run the game
 	while not game.gameOver and len(game.remainingCells) > 0:
 		# Get move input
-		print(f'It is Player {1 + (not game.turn)}\'s turn')
-		x, y = map(int, input('Enter cell: ').split())
-		if not game.makeMove((x - 1, y - 1)):
-			print('Not a valid move. Try again')
-			continue
-		
-		# Display the board
-		displayMap = {
-			None: '_',
-			False: 'O',
-			True: 'X'
-		}
-		print('Board:')
-		for row in game.board:
-			print(*map(lambda x: displayMap[x], row))
-		print()
+		currPlayer = 1 + (not game.turn)
+
+		if currPlayer == player:
+			# It is the players turn
+			print(f'It is Player {currPlayer}\'s turn')
+			x, y = map(int, input('Enter cell: ').split())
+			if not game.makeMove((x - 1, y - 1)):
+				print('Not a valid move. Try again')
+				continue
+			
+			# Display the board
+			print('Board:')
+			for row in game.board:
+				print(*map(lambda x: displayMap[x], row))
+			print()
+		else:
+			# It is the bots turn
+			print(f'It is Player {currPlayer}\'s turn')
+			move = bot(game)
+			game.makeMove(move)
+
+			# Display the board
+			print('Board:')
+			for row in game.board:
+				print(*map(lambda x: displayMap[x], row))
+			print()
 
 	# Display the result
 	if game.gameOver:
