@@ -30,6 +30,12 @@ class Game:
 		Checks if the game is over
 	'''
 
+	botModes = {
+		'e': easyBot,
+		'm': mediumBot,
+		'h': hardBot
+	}
+
 	def __init__(self, width, height):
 		'''Initializes the Game instance
 
@@ -42,11 +48,6 @@ class Game:
 		'''
 
 		# Initialize values
-		self.botModes = {
-			'easy': easyBot,
-			'medium': mediumBot,
-			'hard': hardBot
-		}
 		self.width = width
 		self.height = height
 		self.turn = True
@@ -142,55 +143,73 @@ class Game:
 
 if __name__ == '__main__':
 	# Runs if this file is run directly
-
 	displayMap = {
 		None: '_',
 		False: 'O',
 		True: 'X'
 	}
 
-	# Take input
-	width = int(input('Enter board width: '))
-	height = int(input('Enter board height: '))
-	player = int(input('Enter which player you want to be: '))
-	game = Game(width, height)
-	mode = input('Enter your difficulty mode - Easy/Medium/Hard: ')
-	bot = game.botModes[mode.lower()]
-	print()
-	
-	# Run the game
-	while not game.gameOver and len(game.remainingCells) > 0:
-		# Get move input
-		currPlayer = 1 + (not game.turn)
-
-		if currPlayer == player:
-			# It is the players turn
-			print(f'It is Player {currPlayer}\'s turn')
-			x, y = map(int, input('Enter cell: ').split())
-			if not game.makeMove((x - 1, y - 1)):
-				print('Not a valid move. Try again')
-				continue
-			
-			# Display the board
-			print('Board:')
-			for row in game.board:
-				print(*map(lambda x: displayMap[x], row))
-			print()
+	# Run as long as the user wants to play a game
+	while True:
+		# Take input parameters
+		botEnabled = input('Single Player / Double Player - S/D: ').lower() == 's'
+		if botEnabled:
+			mode = input('Enter your difficulty mode - E/M/H: ')
+			bot = Game.botModes[mode.lower()]
+			names = [
+				input('Enter the Player\'s name: '),
+				'the computer'
+			]
+			player = int(input('Enter which player you want to be: '))
 		else:
-			# It is the bots turn
-			print(f'It is Player {currPlayer}\'s turn')
-			move = bot(game)
-			game.makeMove(move)
+			names = [
+				input('Enter Player 1\'s name: '),
+				input('Enter Player 2\'s name: ')
+			]
+			player = 1
+		width, height = map(int, input('Enter board dimensions: ').split())
+		game = Game(width, height)
+		print()
+		
+		# Run the game
+		while not game.gameOver and len(game.remainingCells) > 0:
+			print(f'It is {names[not game.turn]}\'s turn')
 
-			# Display the board
-			print('Board:')
-			for row in game.board:
-				print(*map(lambda x: displayMap[x], row))
-			print()
+			if (not botEnabled) or 1 + (not game.turn) == player:
+				# It is the players turn
+				# Get move input
+				x, y = map(int, input('Enter cell: ').split())
+				if not game.makeMove((x - 1, y - 1)):
+					print('Not a valid move. Try again')
+					continue
+				
+				# Display the board
+				print('Board:')
+				for row in game.board:
+					print(*map(lambda x: displayMap[x], row))
+				print()
+			else:
+				# It is the bots turn
+				move = bot(game)
+				game.makeMove(move)
 
-	# Display the result
-	if game.gameOver:
-		print(f'Player {1 + game.turn} won!')
-	else:
-		print('It is a draw')
-	print('Thank you for playing!')
+				# Display the board
+				print('Board:')
+				for row in game.board:
+					print(*map(lambda x: displayMap[x], row))
+				print()
+
+		# Display the result
+		if game.gameOver:
+			if botEnabled and 1 + game.turn == player:
+				print(f'The computer won!')
+			else:
+				print(f'{names[game.turn]} won!')
+		else:
+			print('It is a draw')
+		print('Thank you for playing!')
+
+		# Check if the user wants to play again		
+		if not input('Press <Enter> to exit and any other key to play again: '):
+			break
+		print()
