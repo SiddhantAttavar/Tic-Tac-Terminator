@@ -201,7 +201,7 @@ if __name__ == '__main__':
 
 		# Display the result
 		if game.gameOver:
-			if botEnabled and 1 + game.turn == player:
+			if botEnabled and 1 + game.turn != player:
 				print(f'The computer won!')
 			else:
 				print(f'{names[game.turn]} won!')
