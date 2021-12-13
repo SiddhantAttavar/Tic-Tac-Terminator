@@ -29,7 +29,7 @@ class TextButton(Button):
         self.rect = pygame.Rect(pos, (300, 50))
         self.text = font.render(self.message, True, 'white')
         self.text_rect = self.text.get_rect(center=self.rect.center)
-        if self.is_active: pygame.draw.rect(screen, 'yellow', self.rect)
+        if self.is_active: pygame.draw.rect(screen, 'blue', self.rect)
         else: pygame.draw.rect(screen, 'red', self.rect)
         screen.blit(self.text, self.text_rect)
 

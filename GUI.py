@@ -2,7 +2,7 @@ import pygame, sys, time
 from Game import Game
 from Buttons import Button, TextButton
 
-WIDTH, HEIGHT = 800, 800
+WIDTH, HEIGHT = 650, 650
 
 pygame.init()
 pygame.display.set_caption('Tic Tac Terminator')
@@ -82,7 +82,7 @@ while True:
         screen.blit(bg_image, (0,0))
         print_message('Press ENTER to continue', font=font)
         if botEnabled:
-            print_message('Enter your name', (100, HEIGHT // 2), 'midleft', font)
+            print_message('Enter your name', (75, HEIGHT // 2), 'midleft', font)
             if player == 1:
                 player_1_name.draw(screen, (WIDTH//2, HEIGHT//2 - 25))
                 player_1_name.check_active()
@@ -94,11 +94,11 @@ while True:
                 player_2 = player_2_name.get_input()
                 player_1 = 'the computer'
         else:
-            print_message('Enter player 1 name', (100, HEIGHT // 2 - 50), 'midleft', font)
+            print_message('Enter player 1 name', (50, HEIGHT // 2 - 50), 'midleft', font)
             player_1_name.draw(screen, (WIDTH//2, HEIGHT//2 - 75))
             player_1_name.check_active()
             player_1 = player_1_name.get_input()
-            print_message('Enter player 2 name', (100, HEIGHT // 2 + 50), 'midleft', font)
+            print_message('Enter player 2 name', (50, HEIGHT // 2 + 50), 'midleft', font)
             player_2_name.draw(screen, (WIDTH//2, HEIGHT//2 + 25))
             player_2_name.check_active()
             player_2 = player_2_name.get_input()
