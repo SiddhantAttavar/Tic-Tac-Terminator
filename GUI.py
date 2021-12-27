@@ -1,9 +1,12 @@
+#import necessary packages
 import pygame, sys, time
 from Game import Game
 from Buttons import Button, TextButton
 
+#set screen dimensions
 WIDTH, HEIGHT = 650, 650
 
+#initialize pygame window
 pygame.init()
 pygame.display.set_caption('Tic Tac Terminator')
 pygame.display.set_icon(pygame.image.load('assets/icon.png'))
@@ -13,25 +16,43 @@ bg_image = pygame.transform.scale(bg_image, (WIDTH, HEIGHT+100))
 font = pygame.font.Font(None, 40)
 font_large = pygame.font.Font(None, 60)
 
+#initialize the game
 game = Game(3,3)
-player = 1
 game_state = 'number_of_players'
 player_1_name = TextButton(screen, (WIDTH//2, HEIGHT//2))
 player_2_name = TextButton(screen, (WIDTH//2, HEIGHT//2))
 
 def print_message(message, pos=(WIDTH // 2, HEIGHT+50), anchor='center', font=font_large):
+    '''Displays a message on the screen
+    
+    Parameters
+    ----------
+    message : str
+        The message to be displayed
+    pos : tuple
+        The position of the message
+    anchor : str
+        Where the position tuple is to be anchored
+    font : pygame.font
+        The font of the message
+    '''
+
     text = font.render(message, True, 'darkgreen')
     if anchor == 'center': text_rect = text.get_rect(center = pos)
     elif anchor == 'midleft': text_rect = text.get_rect(midleft = pos)
     screen.blit(text, text_rect)
 
 def draw_board():
+    '''Draws the board on the screen'''
+
+    #draw the background image and tic-tac-toe lines
     screen.blit(bg_image, (0,0))
     pygame.draw.line(screen, 'black', (WIDTH/3, 0), (WIDTH/3, HEIGHT), 5)
     pygame.draw.line(screen, 'black', (2*(WIDTH/3), 0), (2*(WIDTH/3), HEIGHT), 5)
     pygame.draw.line(screen, 'black', (0, HEIGHT/3), (WIDTH, HEIGHT/3), 5)
     pygame.draw.line(screen, 'black', (0, 2*(HEIGHT/3)), (WIDTH, 2*(HEIGHT/3)), 5)
 
+    #draw the X's and O's
     for col_ind, col in enumerate(game.board):
         for row_ind, cell in enumerate(col):
             if cell == True:
@@ -44,17 +65,28 @@ def draw_board():
                 screen.blit(surf, rect)
 
 
+#main loop
+#run until user closes the window
 while True:
+
+    #event loop
     for event in pygame.event.get():
+        #close the window
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
+    #check the game state and run the appropriate screen
+
+    #choose number of players
     if game_state == 'number_of_players':
+        #display the background image, prompt and buttons
         screen.blit(bg_image, (0,0))
         print_message('How many players?', (WIDTH // 2, HEIGHT // 2 - 100))
         button_1 = Button(screen, (WIDTH // 2 - 100, HEIGHT // 2), '1')
         button_2 = Button(screen, (WIDTH // 2 - 100, HEIGHT // 2 + 100), '2')
+        
+        #check if any button is clicked
         if button_1.is_clicked():
             game_state = 'player_selection'
             botEnabled = True
@@ -64,11 +96,16 @@ while True:
             botEnabled = False
             time.sleep(0.2)
     
+    #choose to play as X or O
+    #only runs for single player game
     elif game_state == 'player_selection':
+        #display the background image, prompt and buttons
         screen.blit(bg_image, (0,0))
         print_message('Play as', (WIDTH // 2, HEIGHT // 2 - 100))
         button_x = Button(screen, (WIDTH // 2 - 100, HEIGHT // 2), 'X')
         button_o = Button(screen, (WIDTH // 2 - 100, HEIGHT // 2 + 100), 'O')
+        
+        #check if any button is clicked
         if button_x.is_clicked():
             game_state = 'player_names'
             player = 1
@@ -78,11 +115,20 @@ while True:
             player = 2
             time.sleep(0.2)
     
+    #enter player names
     elif game_state == 'player_names':
+        #display the background image and prompt
         screen.blit(bg_image, (0,0))
         print_message('Press ENTER to continue', font=font)
+
+        #check if single player or double player
         if botEnabled:
+            #display the prompt
             print_message('Enter your name', (75, HEIGHT // 2), 'midleft', font)
+            
+            #check if user is playing as X or O
+            #assign user's name to the appropriate player
+            #assign the other player's name as 'the computer'
             if player == 1:
                 player_1_name.draw(screen, (WIDTH//2, HEIGHT//2 - 25))
                 player_1_name.check_active()
@@ -93,29 +139,44 @@ while True:
                 player_2_name.check_active()
                 player_2 = player_2_name.get_input()
                 player_1 = 'the computer'
+        
+        #2 players
         else:
+            #get Player 1's name
             print_message('Enter player 1 name', (50, HEIGHT // 2 - 50), 'midleft', font)
             player_1_name.draw(screen, (WIDTH//2, HEIGHT//2 - 75))
             player_1_name.check_active()
             player_1 = player_1_name.get_input()
+            
+            #get Player 2's name
             print_message('Enter player 2 name', (50, HEIGHT // 2 + 50), 'midleft', font)
             player_2_name.draw(screen, (WIDTH//2, HEIGHT//2 + 25))
             player_2_name.check_active()
             player_2 = player_2_name.get_input()
         
+        #assign final names to names list
         names = [player_1, player_2]
+
+        #check if ENTER key is pressed and move to next screen
         if pygame.key.get_pressed()[pygame.K_RETURN]:
+            #check for single player or double player
+            #if single player, ask for bot difficulty, otherwise start the game
             if botEnabled:
                 game_state = 'bot_difficulty'
             else:
                 game_state = 'active'
 
+    #choose difficulty of bot
+    #only runs for single player game
     elif game_state == 'bot_difficulty':
+        #display the background image, prompt and buttons
         screen.blit(bg_image, (0,0))
         print_message('Select difficulty level', (WIDTH // 2, HEIGHT // 2 - 100))
         button_e = Button(screen, (WIDTH // 2 - 100, HEIGHT // 2), 'Easy')
         button_m = Button(screen, (WIDTH // 2 - 100, HEIGHT // 2 + 100), 'Medium')
         button_h = Button(screen, (WIDTH // 2 - 100, HEIGHT // 2 + 200), 'Hard')
+        
+        #check if any of the buttons are clicked
         if button_e.is_clicked():
             game_state = 'active'
             bot = Game.botModes['e']
@@ -129,13 +190,18 @@ while True:
             bot = Game.botModes['h']
             time.sleep(0.2)
     
+    #the actual game
     elif game_state == 'active':
+        #check if game is over
         if not game.gameOver and len(game.remainingCells) > 0:
+            #display the board and who's turn it is
             draw_board()
             print_message(f'It is {names[not game.turn]}\'s turn', font=font)
             
+            #check if player's turn or bot's turn
             if (not botEnabled) or 1 + (not game.turn) == player:
                 if pygame.mouse.get_pressed()[0]:
+                    #get mouse position and the cell being clicked
                     x, y = pygame.mouse.get_pos()
                     if x < WIDTH/3: col = 0
                     elif x < 2*(WIDTH/3): col = 1
@@ -144,23 +210,30 @@ while True:
                     elif y < 2*(HEIGHT/3): row = 1
                     else: row = 2
 
+                    #try to make the move
                     game.makeMove((col, row))
-                    
+
+            #bot's turn        
             else:
                 move = bot(game)
                 game.makeMove(move)
         
+        #game is over
         else:
             draw_board()
+
+            #check for win or draw
             if game.gameOver:
                 print_message(f'{names[game.turn].capitalize()} won!', (50, HEIGHT+50), 'midleft', font)
             else:
                 print_message('It is a draw!', (50, HEIGHT+50), 'midleft', font)
             
+            #option to play again
             restart_button = Button(screen, (WIDTH-225, HEIGHT+25), 'Play again')
             if restart_button.is_clicked():
                 game = Game(3,3)
                 game_state = 'number_of_players'
                 time.sleep(0.2)
 
+    #update screen
     pygame.display.update()
