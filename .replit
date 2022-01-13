@@ -1,2 +1,2 @@
 language = "bash"
-run = "python snake.py"
+run = "python GUI.py"
