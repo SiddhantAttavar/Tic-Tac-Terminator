@@ -255,7 +255,9 @@ while True:
                 else:
                     scoresDict[names[game.turn]]['draw'] += 1
                     scoresDict[names[not game.turn]]['draw'] += 1
-    
+
+                scoresDict.pop('the computer', None)
+
                 # save results to scores.json
                 with open('scores.json', 'w') as scoresFile:
                     scoresFile.write(dumps(scoresDict))
@@ -269,12 +271,39 @@ while True:
                 print_message('It is a draw!', (50, HEIGHT+50), 'midleft', font)
 
             
-            # option to play again
-            restart_button = Button(screen, (WIDTH-225, HEIGHT+25), 'Play again')
-            if restart_button.is_clicked():
-                game = Game(3,3)
-                game_state = 'number_of_players'
+            # show scores button
+            scores_button = Button(screen, (WIDTH-225, HEIGHT+25), 'Scores')
+            if scores_button.is_clicked():
+                game_state = 'scores'
                 time.sleep(0.2)
+    
+    # scores screen
+    elif game_state == 'scores':
+        screen.blit(bg_image, (0,0))
+
+        # get scores from scores.json
+        scoresDict = {}
+        with open('scores.json', 'r') as scoresFile:
+            scoresDict = load(scoresFile)
+        
+        # display scores
+        if player_1 in scoresDict:
+            print_message(f'{player_1}:', (50, 50), 'midleft', font)
+            print_message(f'Wins - {scoresDict[player_1]["win"]}', (100, 100), 'midleft', font)
+            print_message(f'Losses - {scoresDict[player_1]["lose"]}', (100, 150), 'midleft', font)
+            print_message(f'Draws - {scoresDict[player_1]["draw"]}', (100, 200), 'midleft', font)
+        if player_2 in scoresDict:
+            print_message(f'{player_2}:', (50, 300), 'midleft', font)
+            print_message(f'Wins - {scoresDict[player_2]["win"]}', (100, 350), 'midleft', font)
+            print_message(f'Losses - {scoresDict[player_2]["lose"]}', (100, 400), 'midleft', font)
+            print_message(f'Draws - {scoresDict[player_2]["draw"]}', (100, 450), 'midleft', font)
+
+        # option to play again
+        restart_button = Button(screen, (WIDTH//2-100, HEIGHT+25), 'Play again')
+        if restart_button.is_clicked():
+            game = Game(3,3)
+            game_state = 'number_of_players'
+            time.sleep(0.2)
 
     # update screen
     pygame.display.update()
