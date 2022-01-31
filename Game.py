@@ -1,5 +1,6 @@
 # Import packages
 from Bot import *
+from json import load, dumps
 
 class Game:
 	'''This class describes the TicTacToe game
@@ -205,6 +206,44 @@ if __name__ == '__main__':
 				print(f'The computer won!')
 			else:
 				print(f'{names[game.turn]} won!')
+
+			# get player scores
+			if True:
+				scoresDict = {}
+				try:
+					with open('scores.json', 'r') as scoresFile:
+						scoresDict = load(scoresFile)
+				except:
+					# File has not been created
+					pass
+	
+				# add players to scoresDict if not already present
+				if names[game.turn] not in scoresDict:
+					scoresDict[names[game.turn]] = {
+						'win': 0,
+						'lose': 0,
+						'draw': 0
+					}
+				if names[not game.turn] not in scoresDict:
+					scoresDict[names[not game.turn]] = {
+						'win': 0,
+						'lose': 0,
+						'draw': 0
+					}
+
+				# update scores in scores.json
+				if game.gameOver:
+					scoresDict[names[game.turn]]['win'] += 1
+					scoresDict[names[not game.turn]]['lose'] += 1
+				else:
+					scoresDict[names[game.turn]]['draw'] += 1
+					scoresDict[names[not game.turn]]['draw'] += 1
+
+				scoresDict.pop('the computer', None)
+
+				# save results to scores.json
+				with open('scores.json', 'w') as scoresFile:
+					scoresFile.write(dumps(scoresDict))
 		else:
 			print('It is a draw')
 		print('Thank you for playing!')
