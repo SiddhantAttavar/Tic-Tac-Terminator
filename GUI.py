@@ -303,6 +303,7 @@ while True:
 		if restart_button.is_clicked():
 			game = Game(3,3)
 			game_state = 'number_of_players'
+			game_over = False
 			time.sleep(0.2)
 
 	# update screen
