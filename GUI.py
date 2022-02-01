@@ -1,4 +1,6 @@
 # import necessary packages
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 import pygame, sys, time
 from Game import Game
 from Buttons import Button, TextButton
